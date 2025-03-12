@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/styles/styles.css"> <!-- external CSS for styling this header file... inside our public folder-->
+    <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet"> <!-- CSS Bootstrap-->
+    <!--Below are Google fonts-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <section class="header" style="position: sticky; top: 0; z-index: 999;">
+        <header class="p-3 bg-dark text-white">
+            <div class="container">
+              <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+                  <img src="/images/logo.png" id="companyLogo" alt="company logo">
+                </a>
+                <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                  <li><a href="/aboutUs" class="nav-link px-2 text-white">About Us</a></li>
+                  <li>
+                    <div class="storeBrowseDropdown">
+                        <a href="/shop" class="nav-link px-2 text-white">Shop</a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="/store">TBA</a>
+                        </div>
+                    </div>
+                  </li>
+                  <li> <!-- More button-->
+                    <div class="storeBrowseDropdown">
+                        <a class="btn nav-link px-2 text-white" role="button">More</a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="/trackOrderPage">Track Order</a>
+                            <a class="dropdown-item" href="/faq">FAQ's</a>
+                            <a class="dropdown-item" href="/contact">Contact Us</a>
+                        </div>
+                    </div>
+                  </li>
+                </ul>
+                <div class="text-end"> <!-- DIV containing all items such as shopping cart and profile icon-->
+                  <div class="dropdown show"> <!-- Search item button-->
+                    <a class="btn dropdown-toggle" role="button" id="searchItemButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img src="/images/searchItems.png" alt="the search for shop items button">
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <form action="/" method="post">
+                            <input type="text" name="" id="" class="dropdown-item">
+                            <input type="submit" value="Find">
+                        </form>
+                    </div>
+                  </div>
+                  <!-- Shopping cart-->
+                  <a href="/shoppingCart" id="shoppingCart">
+                    <img src="/images/cart.png" alt="shopping cart icon">
+                    <% if(user){ %> <!--Logged-in user's cart quantity-->
+                        <%= user.cartQuantity %>
+                    <% } else if(nonMember){ %> <!--Non-logged in user's cart quantity-->
+                      <%= nonMember.cart %>
+                    <% } %>
+                  </a>
+                  <!-- Profile icon-->
+                  <div class="dropdown show">
+                    <!-- If user logged in-->
+                    <% if(user){ %>
+                      <% let initials = user.firstname.trim().slice(0,1) + user.lastname.trim().slice(0,1)%>
+                      <a class="dropdown-toggle userInitials btn" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <%= initials %>
+                      </a>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <a href="/viewProfile" class="dropdown-item">View Profile</a>
+                        <a href="/signOut" class="dropdown-item">Sign Out</a>
+                      </div>
+                    <% } else { %> <!-- User has not logged in-->
+                    <a class="btn dropdown-toggle" href="#" role="button" id="profileIcon" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img src="/images/profileIcon.png" alt="an empty user profile icon">
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                      <form action="/credentials" id="credentialsForm" method="post">
+                        <input class="dropdown-item" type="submit" name="isLogin" value="Log In" id="">
+                        <input class="dropdown-item" type="submit" name="isSignUp" value="Sign Up" id="">
+                      </form>
+                    </div>
+                  <% } %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </header>
+    </section>
+    <script src="/bootstrap/js/bootstrap.bundle.min.js"></script> <!-- Used for adding interactive Bootstrap such as dropdowns, carousels, etc-->
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/styles/styles.css"> <!-- CSS styling-->    
+    <%- include("partials/header.ejs") %> <!-- Partials: header... inside views folder-->
+</head>
+<body>
+    <div class="album py-5 bg-white">
+      <!-- Viewing a shop item with more details-->
+      <% if(locals.detailedShopItemPage){ %>
+        <button onclick="location.href='/shop'" class="backButton">
+          <img src="/images/leftArrowIcon.png" alt="back button to return back to shop">
+          Back
+        </button>
+        <div class="detailedShopItemPage">
+          <img src="/images/shop/shopItem<%= shopItem.itemid %>.png" alt="">
+          <div class="shopItemDetails">
+            <p class="shopItemTitle"><%= shopItem.title %></p>
+            <p>"<%= shopItem.description %>"</p>
+            <div class="shopItemCategoryContainer">
+              <p>Type:</p>
+              <p id="shopItemCategory"><%= shopItem.category %></p>
+            </div>
+            <div class="shopItemDimensionsContainer">
+              <p>Dimensions:</p>
+              <p><%= shopItem.dimensions %></p>
+            </div>
+            <p class="artistName">By Mr. AI</p>
+            <p>$<%= shopItem.price %></p>
+            <!--Adding item to cart-->
+            <form action="/addToCart" class="" method="post">
+              <input type="hidden" name="itemID" value="<%= shopItem.itemid %>" id="">
+              <div style="display: flex; justify-content: space-around;">
+                <div class="form-floating col-md-2" style="margin-top: 18%;">
+                  <label for="quantity" style="font-size: 12px;">Quantity</label>
+                  <select class="form-control" name="quantity" id="">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                  </select>
+                </div>      
+                <button type="submit" class="addToCartButton btn btn-secondary w-50">
+                  <img src="/images/addToCartIcon.png" alt="">
+                  Add To Cart
+                </button>
+              </div>        
+            </form>
+          </div>
+        </div>
+        
+        <!-- Normal shop browsing-->
+        <% } else{ %>
+          <div class="container">
+            <div class="row"> <!--Sets each shop item in row arrangement-->
+              <% for(var i = 0; i < locals.shopItems.length; i++){ %>
+                <div class="col-md-4">
+                  <div class="card mb-4 box-shadow"> <!--Each shop item-->
+                    <input type="hidden" name="itemID" value="<%= shopItems[i].itemid %>" id="">
+                    <img class="card-img-top" src="./images/shop/shopItem<%= shopItems[i].itemid %>.png" data-holder-rendered="true" style="height: 225px; width: 100%; display: block;">
+                    <div class="card-body" style="text-align: center;">
+                        <a href="/detailedShopItem/<%= shopItems[i].itemid %>" class="shopItemTitle"><%= shopItems[i].title.toUpperCase() %></a>
+                        <p>$<%= shopItems[i].price %></p>
+                    </div>
+                  </div>
+                </div> 
+              <% } %>
+            </div>
+          </div>
+       <% } %>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function(){
+        //making the first letter of the shop item's category text capitalize
+        var shopItemCategory = document.getElementById("shopItemCategory").innerHTML;
+        shopItemCategory = makeFirstLetterCapital(shopItemCategory);
+        document.getElementById("shopItemCategory").innerHTML = shopItemCategory;
+        
+        function makeFirstLetterCapital(text){
+          text = String(text).charAt(0).toUpperCase() + String(text).slice(1)
+          return text;
+        };
+      });
+    </script>
+    <%- include("partials/footer.ejs") %> <!-- !!IMPORTANT: MUST BE PLACED AT END OF <BODY>: Partials: footer... inside views folder-->
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <%- include("partials/header.ejs") %> <!-- Partials: header... inside views folder-->
+    <link rel="stylesheet" href="/styles/styles.css"> <!-- CSS styling-->
+</head>
+<body>
+    <div style="width: 1400px; height: 1500px; margin-top: 5%; margin-left: auto; margin-right: auto; margin-bottom: 30%; display: flex; flex-direction: column; align-items: center;">
+        <div class="aboutUsInfo">
+            <h1>About Us</h1>
+        <p>  
+            Here at AIrtistry, technology and creativity come together to push the boundaries of visual expression. Founded by a team of passionate artists and engineers, we believe that artificial intelligence holds limitless potential for transforming the art world. Our mission is to bring you one-of-a-kind, AI-generated pieces that captivate the imagination and spark inspiration. 
+            From conceptual sketches to fully realized masterpieces, every artwork is crafted using cutting-edge machine learning models—giving rise to vivid colors, fluid shapes, and striking compositions. Whether you’re an avid collector, a casual art lover, or simply curious about the future of creativity, we invite you to explore our gallery and experience the possibilities of AI-driven artistry. Together, let’s embark on this exciting journey into the future of art.
+        </p>
+        <img src="/images/robotDrawing.jpg" alt="an AI robot drawing">
+        </div>
+        <h2 style="margin-top: 20%; margin-bottom: 5%;">Meet The Team</h2>
+        <div class="companyStaffInfo">
+            <div>
+                <img src="/images/companyStaff/animeboy.png" alt="">
+                <p>Nhut Tran, CEO</p>
+            </div>
+            <div>
+                <img src="/images/companyStaff/mrAI.png" alt="">
+                <p>Mr. AI, Artist</p>
+            </div>
+        </div>
+    </div>
+    <%- include("partials/footer.ejs") %> <!-- !!IMPORTANT: MUST BE PLACED AT END OF <BODY>: Partials: footer... inside views folder-->
+
+</body>
+</html>

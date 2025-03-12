@@ -1,0 +1,229 @@
+<!-- THIS PAGE IS FOR CUSTOMERS TO LOG IN OR SIGN UP FOR ACCOUNT-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <%- include("partials/header.ejs") %> <!-- Partials: header... inside views folder-->
+
+</head>
+<body>
+    <% if(locals.loginPage){ %> <!-- User login page-->
+        <div class="errorMessage">
+            <%= locals.loginErrorMessage %>
+        </div>
+        <h1 style="text-align: center; margin-top: 5%; margin-bottom: 3%; font-size: 30px;">Welcome back, please log in.</h1>
+        <div class="col-md-10 mx-auto col-lg-5" style="margin-bottom: 30%;">
+            <form class="credentialsForm p-4 p-md-5 border rounded-3 bg-light" action="/userLogin" method="post"> <!-- Login form-->
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" name="usernameOrEmail" value="<%= locals.userInput ? userInput.usernameOrEmail : " " %>">
+                <label for="usernameOrEmail">Email address / username</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="password" class="form-control" name="password">
+                <label for="password">Password</label>
+              </div>
+              <div class="checkbox mb-3">
+                <label>
+                  <input type="checkbox" value="remember-me"> Remember me
+                </label>
+              </div>
+              <input type="submit" class="w-100 btn btn-lg btn-primary" id="" value="Sign In">
+              <hr class="my-4">
+            </form>
+          </div>
+    <% } else if(locals.signUpPage){ %> <!-- User sign up page -->
+        <div class="memberBenefits">
+            <p>Member Perks</p>
+            <div class="benefits"> <!-- the section that holds all 3 circles-->
+                <div class="benefitsPane"> 
+                    <div class="benefitsCircle"> <!-- the circle itself-->
+                        <img src="./images/shippingIcon.png" alt="shipping icon">
+                    </div>
+                    <p>FREE Shipping!</p>
+                    <p class="benefitsDescription">Members get free shipping on all orders! No minimum purchase required.</p>
+                </div>
+                <div class="benefitsPane"> 
+                    <div class="benefitsCircle"> 
+                        <img src="./images/starIcon.png" alt="shipping icon">
+                    </div>
+                    <p>Earn Points!</p>
+                    <p class="benefitsDescription">Earn points on your future orders. Every 1,000 points earned, get $10 off your next order!</p>
+                </div>
+                <div class="benefitsPane">
+                    <div class="benefitsCircle">
+                        <img src="./images/presentBoxIcon.png" alt="shipping icon">
+                    </div>
+                    <p>Special Offers!</p>
+                    <p class="benefitsDescription">Receive special gifts, offers, birthday surprises, and more!</p>
+                </div>
+            </div>
+        </div>
+        <% if(locals.signUpErrorMessage){ %>
+            <div class="errorMessage">
+                <%= signUpErrorMessage %>
+            </div>
+        <% } %>
+        <div class="col-md-10 mx-auto col-lg-5">
+            <!--the form-->
+            <form class="signUpForm p-4 p-md-5 border rounded-3 bg-light" method="post" action="/newUsersignUpForm" onsubmit="return validatePassword()" onkeyup="passwordColorChecker()">
+                <p style="font-weight: bold; font-size: 25px;">Personal Information</p>
+                <div class="signUpSmallBoxes">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" name="firstName" value="<%= locals.userInput ? userInput.firstName : " " %>" id="firstName" required>
+                        <label for="firstName"> First Name</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" name="lastName" value="<%= locals.userInput ? userInput.lastName : " " %>" id="lastName" required>
+                        <label for="lastName"> Last Name</label>
+                    </div>
+                </div>
+                <div class="signUpSmallBoxes">
+                    <div class="form-floating mb-3">
+                        <input type="number" class="form-control" name="phoneNumber" value="<%= locals.userInput ? userInput.phoneNumber : " " %>" id="phoneNumber">
+                        <label for="phoneNumber"> Phone Number</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="date" class="form-control" id="" name="birthday" value="<%= locals.userInput ? userInput.birthday : " " %>" min="1900-01-01" max="2026-12-31" />                        
+                        <label for="birthday">Birthday:</label>
+                    </div>
+                </div>
+                <div class="form-floating mb-3">
+                    <div class="col-auto">
+                        <label class="sr-only" for="inlineFormInputGroup"></label>
+                        <div class="input-group mb-2">
+                          <div class="input-group-prepend">
+                            <div class="input-group-text">@</div>
+                          </div>
+                          <input type="text" class="form-control" name="username" value="<%= locals.userInput ? userInput.username : " " %>" id="inlineFormInputGroup" placeholder="Username" required>
+                        </div>
+                      </div>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="email" class="form-control" name="email" value="<%= locals.userInput ? userInput.email : " " %>" required>
+                    <label for="floatingInput">Email address</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control" name="password" id="password" placeholder="Password" required>
+                    <label for="floatingPassword">Password</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control" name="passwordConfirmation" id="passwordConfirmation" placeholder="Password" required>
+                    <label for="floatingPasswordConfirm">Confirm Password</label>
+                </div>        
+                <hr class="my-4"> <!-- Horiz. line-->
+                <p style="font-weight: bold; font-size: 25px;">Shipping Information</p>
+                <div class="form-floating" style="margin: 15px 0px;">
+                    <input type="text" class="form-control" name="residentialAddress" value="<%= locals.userInput ? userInput.residentialAddress : " " %>" id="inputAddress">
+                    <label for="inputAddress">Address</label>
+                </div>
+                <div class="cityZipState">
+                    <div class="form-floating col-md-6">
+                      <input type="text" class="form-control" name="city" value="<%= locals.userInput ? userInput.city : " " %>" id="inputCity">
+                      <label for="inputCity">City</label>
+                    </div>
+                    <div class="form-floating col-md-4">
+                      <label for="inputState" style="font-size: 12px; ">State</label>
+                      <select id="inputState" name="americanState" value="<%= locals.userInput ? userInput.americanState : " " %>" class="form-control">
+                        <option selected></option>
+                        <option value="AL">AL</option>
+                        <option value="AK">AK</option>
+                        <option value="AZ">AZ</option>
+                        <option value="AR">AR</option>
+                        <option value="CA">CA</option>
+                        <option value="CO">CO</option>
+                        <option value="CT">CT</option>
+                        <option value="DE">DE</option>
+                        <option value="FL">FL</option>
+                        <option value="GA">GA</option>
+                        <option value="HI">HI</option>
+                        <option value="ID">ID</option>
+                        <option value="IL">IL</option>
+                        <option value="IN">IN</option>
+                        <option value="IA">IA</option>
+                        <option value="KS">KS</option>
+                        <option value="KY">KY</option>
+                        <option value="LA">LA</option>
+                        <option value="ME">ME</option>
+                        <option value="MD">MD</option>
+                        <option value="MA">MA</option>
+                        <option value="MI">MI</option>
+                        <option value="MN">MN</option>
+                        <option value="MS">MS</option>
+                        <option value="MO">MO</option>
+                        <option value="MT">MT</option>
+                        <option value="NE">NE</option>
+                        <option value="NV">NV</option>
+                        <option value="NH">NH</option>
+                        <option value="NJ">NJ</option>
+                        <option value="NM">NM</option>
+                        <option value="NY">NY</option>
+                        <option value="NC">NC</option>
+                        <option value="ND">ND</option>
+                        <option value="OH">OH</option>
+                        <option value="OK">OK</option>
+                        <option value="OR">OR</option>
+                        <option value="PA">PA</option>
+                        <option value="RI">RI</option>
+                        <option value="SC">SC</option>
+                        <option value="SD">SD</option>
+                        <option value="TN">TN</option>
+                        <option value="TX">TX</option>
+                        <option value="UT">UT</option>
+                        <option value="VT">VT</option>
+                        <option value="VA">VA</option>
+                        <option value="WA">WA</option>
+                        <option value="WV">WV</option>
+                        <option value="WI">WI</option>
+                        <option value="WY">WY</option>
+                      </select>
+                    </div>
+                    <div class="form-floating col-md-2">
+                      <input type="number" name="zipCode" value="<%= locals.userInput ? userInput.zipCode : " " %>" min="0" class="form-control" id="inputZip">
+                      <label for="inputZip">Zip</label>
+                    </div>
+                </div>
+                <button class="w-100 btn btn-lg btn-primary" type="submit" style="margin-top: 20px;">Sign Up</button>
+                <small class="text-muted">By clicking Sign up, you agree to the terms of use.</small>
+            </form>
+        </div>
+        <!--After a user has signed up for an account-->
+      <% } else if(locals.afterSignUpPage){ %>
+        <div class="signUpConfirmationContainer">
+            <h1>Thank you for signing up, <%= locals.userFirstName %>!</h1>
+            <a href="/" class="btn btn-primary">Done</a>
+        </div>
+    <% } %>
+    <script>
+        var password = document.getElementById("password");
+        var passwordConfirmation = document.getElementById("passwordConfirmation");
+
+        //password confirmation checker
+        function validatePassword(){
+            if(passwordConfirmation.value != password.value){
+                passwordConfirmation.setCustomValidity("Passwords do not match");
+                return false;
+            } else{
+                passwordConfirmation.setCustomValidity("");
+                return true;
+            };
+        }
+        //NOTE: 'function()' will execute immediately (synchronous) while 'function' executes when an event action is triggered
+        password.onchange = validatePassword; //EventListener: when a user types and moves away from the input field.
+        passwordConfirmation.onkeyup = validatePassword; //each keyboard letter a user presses, it automatically checks if password matches
+
+        //green color if both passwords are matching as the user types
+        function passwordColorChecker(){
+            if(password.value != passwordConfirmation.value){
+                password.style.color = "red";
+                passwordConfirmation.style.color = "red";
+            } else{
+                password.style.color = "green";
+                passwordConfirmation.style.color = "green";
+            };
+        };
+    </script>
+    <%- include("partials/footer.ejs") %> <!-- !!IMPORTANT: MUST BE PLACED AT END OF <BODY>: Partials: footer... inside views folder-->
+</body>
+</html>

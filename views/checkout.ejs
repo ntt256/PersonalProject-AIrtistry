@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/styles/styles.css"> <!-- CSS styling-->    
+    <%- include("partials/header.ejs") %> <!-- Partials: header... inside views folder-->
+</head>
+<body onload="hidePaymentMethodInfoSection()">
+    <div style="display: flex; justify-content: center; gap: 25%; margin-top: 30px; margin-bottom: 10%;">
+        <% if(locals.viewCart && ((locals.memberCartItems && locals.memberCartItems.length > 0) || (locals.nonMemberCartItems && locals.nonMemberCartItems.length > 0))){ %>
+            <div class="cartSummary" style="overflow-y: auto;">
+                <div style="position: sticky; top: 0; z-index: 500; background-color: white;">
+                    <p class="sectionTitle">Your Items</p>
+                </div>
+                    <% if(locals.memberCartItems){ %> <!-- Logged-in user's cart items-->
+                        <% for(let i = 0; i < memberCartItems.length; i++){ %>
+                        <div class="card mb-4 box-shadow itemCard">
+                            <img src="./images/shop/shopItem<%= memberCartItems[i].itemid %>.png" class="cartitemImage">
+                            <p>"<%= memberCartItems[i].title.toUpperCase() %>"</p>
+                            <small>$<%= memberCartItems[i].price %></small>
+                            <div class="itemQuantityControls">
+                                <p>Quantity: <%= memberCartItems[i].quantity %></p>
+                                <form action="/modifyCartItemQuantity/<%= memberCartItems[i].itemid %>" method="post">
+                                    <input type="hidden" name="loggedInUser" id="">
+                                    <button class="btn btn-light" name="add" type="submit">
+                                        <img src="/images/plusIcon.png" alt="plus icon for increasing the item quantity">
+                                    </button>
+                                    <button class="btn btn-light" name="minus" type="submit">
+                                        <img src="/images/minusIcon.png" alt="minus icon for decreasing the item quantity">
+                                    </button>
+                                    <button class="btn btn-light" name="delete" type="submit">
+                                        <img src="/images/trashcanIcon.png" alt="trash can icon for removing item from cart">
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    <% } %>              
+                <% } else if(locals.nonMemberCartItems){ %> <!-- Non-logged in user's cart items-->
+                    <% for(let i = 0; i < nonMemberCartItems.length; i++){ %>
+                            <div class="card mb-4 box-shadow itemCard">
+                                <img src="./images/shop/shopItem<%= nonMemberCartItems[i].itemID %>.png" class="cartitemImage">
+                                <p><%= nonMemberCartItems[i].title.toUpperCase() %></p>
+                                <small id="itemPrice">$<%= nonMemberCartItems[i].price %></small>
+                                <div class="itemQuantityControls">
+                                <p id="itemQuantity">Quantity: <%= nonMemberCartItems[i].quantity %></p>
+                                <form action="/modifyCartItemQuantity/<%= nonMemberCartItems[i].itemID %>" method="post">
+                                    <button class="btn btn-light" name="add" type="submit">
+                                        <img src="/images/plusIcon.png" alt="plus icon for increasing the item quantity">
+                                    </button>
+                                    <button class="btn btn-light" name="minus" type="submit">
+                                        <img src="/images/minusIcon.png" alt="minus icon for decreasing the item quantity">
+                                    </button>
+                                    <button class="btn btn-light" name="delete" type="submit">
+                                        <img src="/images/trashcanIcon.png" alt="trash can icon for removing item from cart">
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    <% } %>
+                <% } %>
+        </div>
+        <div class="orderSummary">
+            <p class="sectionTitle">Order Summary</p>
+            <div class="costSummary">
+                <p>Subtotal</p>
+                <div>
+                    <p>$<%= locals.subtotal %></p>
+                    <% if((locals.user && locals.user.promoCodeDiscount) || (locals.nonMember && locals.nonMember.promoCodeDiscount)){ %>
+                        <p id="appliedDiscountAmount">- $<%= (locals.user && locals.user.promoCodeDiscount.discountamount) || (locals.nonMember && locals.nonMember.promoCodeDiscount.discountamount) %></p>
+                    <% } %>
+                </div>
+            </div>
+            <div class="costSummary">
+                <p>Shipping</p>
+                <p style="position: relative; right: 4%;"><%= locals.shippingCost %> </p>
+            </div>
+            <div class="costSummary">
+                <p>Estimated Total</p>
+                <p>$<%= locals.estimatedTotal %> </p>
+            </div>
+            <hr>
+            <div class="dropdown show promoCodeSection">
+                <div id="applyPromoCodeBox">
+                    <a class="btn dropdown-toggle" role="button" id="" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Promo Code</a>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <form action="/validatePromoCode" method="post">
+                            <input type="text" name="promoCode" placeholder="Enter your promo code..." id="">
+                            <input type="submit" class="btn btn-success" name="" value="OK" id="">
+                        </form>
+                    </div>
+                </div>
+                <!--If user entered a valid promo code-->
+                <% if((locals.user && locals.user.promoCodeDiscount) || (locals.nonMember && locals.nonMember.promoCodeDiscount)){ %>
+                    <p id="validPromoCodeMessage">Applied successfully!</p>
+                    <div style="display: flex; align-items: center; justify-content: center; position: relative; bottom: 20%;">
+                        <p id="promoCode"><%= (locals.user && locals.user.promoCodeDiscount.couponcode) || (locals.nonMember && locals.nonMember.promoCodeDiscount.couponcode) %></p>
+                        <form action="/removePromoCode" method="post">
+                            <button class="btn" id="redXMark">
+                                <img src="./images/xCancel.png" alt="red 'x' mark cancel button">
+                            </button>
+                        </form>
+                    </div>
+                    <!--If invalid promo code-->
+                <% } else if(locals.promoCodeError){ %>
+                        <p id="invalidPromoCodeMessage"><%= promoCodeError %></p>
+                <% } %>
+            </div>
+            <form action="/checkout" method="post" style="margin-top: 15%;">
+                <input type="hidden" name="subtotal" value="<%= locals.subtotal %>" id="">
+                <input type="hidden" name="estimatedTotal" value="<%= locals.estimatedTotal %>" id="">
+                <input type="hidden" name="shippingCost" value="<%= locals.shippingCost %>" id="">
+                <button class="btn btn-success checkoutButton" type="submit">Proceed To Checkout</button>
+            </form>
+        </div>
+        <% } else if((locals.memberCartItems && locals.memberCartItems.length === 0) || (locals.nonMemberCartItems && locals.nonMemberCartItems.length === 0)){ %>
+            <p style="margin-top: 20%; margin-bottom: 40%;">Your cart is currently empty :(</p>
+        <% } %>
+
+        <!--Checkout page-->
+        <% if(locals.checkout){ %>
+            <!-- <button class="w-2 btn btn-primary mb-3" type="button" style="margin-top: 20px;" onclick="window.location.href='/shoppingCart'">Back</button> -->
+            <div class="cartSummary">
+                <div style="position: sticky; top: 0; z-index: 500; background-color: white;">
+                    <p class="sectionTitle">Items In This Order</p>
+                </div>
+                <!-- Logged-in user's cart items-->
+                <div class="cartItemsList">
+                    <% if(locals.memberCartItems){ %>
+                        <% for(let i = 0; i < memberCartItems.length; i++){ %>
+                        <div class="card mb-4 box-shadow itemCard">
+                            <img src="./images/shop/shopItem<%= memberCartItems[i].itemid %>.png" class="cartitemImage">
+                            <p>"<%= memberCartItems[i].title.toUpperCase() %>"</p>
+                            <small>$<%= memberCartItems[i].price %></small>
+                            <p>Quantity: <%= memberCartItems[i].quantity %></p>
+                        </div>
+                    <% } %>
+                <!-- Non-logged in user's cart items-->              
+                <% } else if(locals.nonMemberCartItems){ %>
+                    <% for(let i = 0; i < nonMemberCartItems.length; i++){ %>
+                            <div class="card mb-4 box-shadow itemCard">
+                                <img src="./images/shop/shopItem<%= nonMemberCartItems[i].itemID %>.png" class="cartitemImage">
+                                <p><%= nonMemberCartItems[i].title.toUpperCase() %></p>
+                                <small id="itemPrice">$<%= nonMemberCartItems[i].price %></small>
+                                <p id="itemQuantity">Quantity: <%= nonMemberCartItems[i].quantity %></p>
+                            </div>
+                    <% } %>
+                <% } %>
+                </div>
+                <hr class="my-4" style="margin-top: 50%;">
+                <div class="costSummary">
+                    <p>Estimated Total</p>
+                    <p>$<%= locals.cost.estimatedTotal %></p>
+                </div>
+                <div class="costSummary">
+                    <p>Shipping</p>
+                    <p><%= locals.cost.shippingCost %> </p>
+                </div>
+                <div class="costSummary">
+                    <p style="font-weight: bold;">Total</p>
+                    <p>$<%= locals.cost.total %> </p>
+                </div>
+            </div>
+            <form method="post" action="/placeOrder" class="p-4 p-md-5 border rounded-3 bg-light">
+                <input type="hidden" name="cart" value="<%=JSON.stringify(locals.memberCartItems || locals.nonMemberCartItems)%>" id="">
+                <input type="hidden" name="cost" value="<%= JSON.stringify(locals.cost) %>" id="">
+                <p style="font-weight: bold; font-size: 25px;">Personal Information</p>
+                <!--Personal info-->
+                <input type="hidden" name="userID" value="<%= user ? user.userid : ""%>" id="">
+                <div class="signUpSmallBoxes">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" name="firstName" value="<%= user ? user.firstname : "" %>" id="firstName" required>
+                        <label for="firstName"> First Name</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" name="lastName" value="<%= user ? user.lastname : "" %>" id="lastName" required>
+                        <label for="lastName"> Last Name</label>
+                    </div>
+                </div>
+                <div class="signUpSmallBoxes">
+                    <div class="form-floating mb-3">
+                        <input type="number" class="form-control" name="phoneNumber" value="<%= user ? user.phonenumber : "" %>" id="phoneNumber">
+                        <label for="phoneNumber"> Phone Number</label>
+                    </div>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="email" class="form-control" name="email" value="<%= user ? user.email : "" %>" required>
+                    <label for="floatingInput">Email address</label>
+                </div>
+                <!--Payment info-->
+                <hr class="my-5">
+                <p style="font-weight: bold; font-size: 25px;">Payment Information</p>
+                <% if(locals.memberPaymentMethods && locals.memberPaymentMethods.length > 0){ %>
+                    <small>Select Card On File</small>
+                    <select class="form-select mb-3" name="memberPaymentMethodSelection" value="" id="memberPaymentMethodSelection" onchange="hidePaymentMethodInfoSection()">
+                        <% for(let card of memberPaymentMethods){ %>
+                            <option value="<%= card.cardtype.toUpperCase() %> <%= card.cardnumber.substring(card.cardnumber.length - 4) %>"> <%= card.cardtype.toUpperCase() %> <%= card.cardnumber.substring(card.cardnumber.length - 4) %></option>
+                        <% } %>
+                        <option id="otherPaymentMethod" value="other">Other payment method</option>
+                    </select>
+                <% } %>
+                <div id="paymentMethodInfo">
+                    <div class="form-floating mb-3">
+                        <input type="text" name="cardHolderName" value="" class="form-control" id="cardHolderName" required>
+                        <label for="cardHolderName">Name On Card</label>
+                    </div>
+                    <div class="form-floating col-md-4 mb-3">
+                        <select name="cardType" value="" id="cardType" class="form-control" required>
+                            <option value="" selected></option>
+                            <option value="visa">VISA</option>
+                            <option value="discover">Discover</option>
+                            <option value="mastercard">Mastercard</option>
+                            <option value="american express">American Express</option>
+                        </select>
+                        <label for="cardType">Card Type</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="number" name="creditCardNumber" value="" class="form-control" id="creditCardNumber" required>
+                        <label for="creditCardNumber">Card Number</label>
+                    </div>
+                    <div class="form-floating col-md-4 mb-3">
+                        <input type="date" class="form-control" id="expirationDate" name="expirationDate" value="" min="2025-01-01" max="2035-12-31" required>                        
+                        <label for="expirationDate">Exp Date</label>
+                    </div>
+                    <div class="form-floating col-md-2 mb-3">
+                        <input type="number" name="cvcNumber" value="" class="form-control" id="cvcNumber" min="0" required>
+                        <label for="securityCode">CVC</label>
+                    </div>
+                </div>
+                <hr class="my-4">
+                <!--Shipping info-->
+                <p style="font-weight: bold; font-size: 25px;">Shipping Information</p>
+                <div class="form-floating" style="margin: 15px 0px;">
+                    <input type="text" class="form-control" name="residentialAddress" value="<%= user ? user.address : "" %>" id="address">
+                    <label for="address">Address</label>
+                </div>
+                <div class="cityZipState">
+                    <div class="form-floating col-md-4">
+                      <input type="text" class="form-control" name="city" value="<%= user ? user.city : "" %>" id="city">
+                      <label for="city">City</label>
+                    </div>
+                    <div class="form-floating col-md-2">
+                      <label for="state" style="font-size: 12px; ">State</label>
+                      <select id="state" name="americanState" class="form-control" required>
+                        <option selected></option>
+                        <option value="AL" <%= user && user.state === "AL" ? "selected" : "" %>>AL</option>
+                        <option value="AK" <%= user && user.state === "AK" ? "selected" : "" %>>AK</option>
+                        <option value="AZ" <%= user && user.state === "AZ" ? "selected" : "" %>>AZ</option>
+                        <option value="AR" <%= user && user.state === "AR" ? "selected" : "" %>>AR</option>
+                        <option value="CA" <%= user && user.state === "CA" ? "selected" : "" %>>CA</option>
+                        <option value="CO" <%= user && user.state === "CO" ? "selected" : "" %>>CO</option>
+                        <option value="CT" <%= user && user.state === "CT" ? "selected" : "" %>>CT</option>
+                        <option value="DE" <%= user && user.state === "DE" ? "selected" : "" %>>DE</option>
+                        <option value="FL" <%= user && user.state === "FL" ? "selected" : "" %>>FL</option>
+                        <option value="GA" <%= user && user.state === "GA" ? "selected" : "" %>>GA</option>
+                        <option value="HI" <%= user && user.state === "HI" ? "selected" : "" %>>HI</option>
+                        <option value="ID" <%= user && user.state === "ID" ? "selected" : "" %>>ID</option>
+                        <option value="IL" <%= user && user.state === "IL" ? "selected" : "" %>>IL</option>
+                        <option value="IN" <%= user && user.state === "IN" ? "selected" : "" %>>IN</option>
+                        <option value="IA" <%= user && user.state === "IA" ? "selected" : "" %>>IA</option>
+                        <option value="KS" <%= user && user.state === "KS" ? "selected" : "" %>>KS</option>
+                        <option value="KY" <%= user && user.state === "KY" ? "selected" : "" %>>KY</option>
+                        <option value="LA" <%= user && user.state === "LA" ? "selected" : "" %>>LA</option>
+                        <option value="ME" <%= user && user.state === "ME" ? "selected" : "" %>>ME</option>
+                        <option value="MD" <%= user && user.state === "MD" ? "selected" : "" %>>MD</option>
+                        <option value="MA" <%= user && user.state === "MA" ? "selected" : "" %>>MA</option>
+                        <option value="MI" <%= user && user.state === "MI" ? "selected" : "" %>>MI</option>
+                        <option value="MN" <%= user && user.state === "MN" ? "selected" : "" %>>MN</option>
+                        <option value="MS" <%= user && user.state === "MS" ? "selected" : "" %>>MS</option>
+                        <option value="MO" <%= user && user.state === "MO" ? "selected" : "" %>>MO</option>
+                        <option value="MT" <%= user && user.state === "MT" ? "selected" : "" %>>MT</option>
+                        <option value="NE" <%= user && user.state === "NE" ? "selected" : "" %>>NE</option>
+                        <option value="NV" <%= user && user.state === "NV" ? "selected" : "" %>>NV</option>
+                        <option value="NH" <%= user && user.state === "NH" ? "selected" : "" %>>NH</option>
+                        <option value="NJ" <%= user && user.state === "NJ" ? "selected" : "" %>>NJ</option>
+                        <option value="NM" <%= user && user.state === "NM" ? "selected" : "" %>>NM</option>
+                        <option value="NY" <%= user && user.state === "NY" ? "selected" : "" %>>NY</option>
+                        <option value="NC" <%= user && user.state === "NC" ? "selected" : "" %>>NC</option>
+                        <option value="ND" <%= user && user.state === "ND" ? "selected" : "" %>>ND</option>
+                        <option value="OH" <%= user && user.state === "OH" ? "selected" : "" %>>OH</option>
+                        <option value="OK" <%= user && user.state === "OK" ? "selected" : "" %>>OK</option>
+                        <option value="OR" <%= user && user.state === "OR" ? "selected" : "" %>>OR</option>
+                        <option value="PA" <%= user && user.state === "PA" ? "selected" : "" %>>PA</option>
+                        <option value="RI" <%= user && user.state === "RI" ? "selected" : "" %>>RI</option>
+                        <option value="SC" <%= user && user.state === "SC" ? "selected" : "" %>>SC</option>
+                        <option value="SD" <%= user && user.state === "SD" ? "selected" : "" %>>SD</option>
+                        <option value="TN" <%= user && user.state === "TN" ? "selected" : "" %>>TN</option>
+                        <option value="TX" <%= user && user.state === "TX" ? "selected" : "" %>>TX</option>
+                        <option value="UT" <%= user && user.state === "UT" ? "selected" : "" %>>UT</option>
+                        <option value="VT" <%= user && user.state === "VT" ? "selected" : "" %>>VT</option>
+                        <option value="VA" <%= user && user.state === "VA" ? "selected" : "" %>>VA</option>
+                        <option value="WA" <%= user && user.state === "WA" ? "selected" : "" %>>WA</option>
+                        <option value="WV" <%= user && user.state === "WV" ? "selected" : "" %>>WV</option>
+                        <option value="WI" <%= user && user.state === "WI" ? "selected" : "" %>>WI</option>
+                        <option value="WY" <%= user && user.state === "WY" ? "selected" : "" %>>WY</option>
+                      </select>
+                    </div>
+                    <div class="form-floating col-md-3">
+                      <input type="number" name="zipCode" value="<%= user ? user.zipcode : "" %>" min="0" class="form-control" id="zipCode">
+                      <label for="zipCode">Zip</label>
+                    </div>
+                </div>
+                <hr class="my-4">
+                <!--Billing info-->
+                <p style="font-weight: bold; font-size: 25px;">Billing Information</p>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value=""  id="billingSameAsShipping">
+                    <label class="form-check-label" for="billingSameAsShipping">Same as Shipping</label>
+                </div>
+                <div class="signUpSmallBoxes">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" name="billingFirstName" value="" id="billingFirstName" required>
+                        <label for="firstName"> First Name</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" name="billingLastName" value="" id="billingLastName" required>
+                        <label for="lastName"> Last Name</label>
+                    </div>
+                </div>
+                <div class="form-floating" style="margin: 15px 0px;">
+                    <input type="text" class="form-control" name="billingAddress" value="" id="billingAddress">
+                    <label for="billingAddress">Address</label>
+                </div>
+                <div class="cityZipState">
+                    <div class="form-floating col-md-4">
+                      <input type="text" class="form-control" name="billingCity" value="" id="billingCity">
+                      <label for="city">City</label>
+                    </div>
+                    <div class="form-floating col-md-2">
+                      <label for="billingState" style="font-size: 12px; ">State</label>
+                      <select id="billingState" name="billingState" value="" class="form-control">
+                        <option selected></option>
+                        <option value="AL">AL</option>
+                        <option value="AK">AK</option>
+                        <option value="AZ">AZ</option>
+                        <option value="AR">AR</option>
+                        <option value="CA">CA</option>
+                        <option value="CO">CO</option>
+                        <option value="CT">CT</option>
+                        <option value="DE">DE</option>
+                        <option value="FL">FL</option>
+                        <option value="GA">GA</option>
+                        <option value="HI">HI</option>
+                        <option value="ID">ID</option>
+                        <option value="IL">IL</option>
+                        <option value="IN">IN</option>
+                        <option value="IA">IA</option>
+                        <option value="KS">KS</option>
+                        <option value="KY">KY</option>
+                        <option value="LA">LA</option>
+                        <option value="ME">ME</option>
+                        <option value="MD">MD</option>
+                        <option value="MA">MA</option>
+                        <option value="MI">MI</option>
+                        <option value="MN">MN</option>
+                        <option value="MS">MS</option>
+                        <option value="MO">MO</option>
+                        <option value="MT">MT</option>
+                        <option value="NE">NE</option>
+                        <option value="NV">NV</option>
+                        <option value="NH">NH</option>
+                        <option value="NJ">NJ</option>
+                        <option value="NM">NM</option>
+                        <option value="NY">NY</option>
+                        <option value="NC">NC</option>
+                        <option value="ND">ND</option>
+                        <option value="OH">OH</option>
+                        <option value="OK">OK</option>
+                        <option value="OR">OR</option>
+                        <option value="PA">PA</option>
+                        <option value="RI">RI</option>
+                        <option value="SC">SC</option>
+                        <option value="SD">SD</option>
+                        <option value="TN">TN</option>
+                        <option value="TX">TX</option>
+                        <option value="UT">UT</option>
+                        <option value="VT">VT</option>
+                        <option value="VA">VA</option>
+                        <option value="WA">WA</option>
+                        <option value="WV">WV</option>
+                        <option value="WI">WI</option>
+                        <option value="WY">WY</option>
+                      </select>
+                    </div>
+                    <div class="form-floating col-md-3">
+                      <input type="number" name="billingZipCode" value="" min="0" class="form-control" id="billingZipCode">
+                      <label for="zipCode">Zip</label>
+                    </div>
+                </div>
+                <button class="w-100 btn btn-lg btn-success" type="submit" style="margin-top: 20px;">Submit Order</button>
+                <small class="text-muted">By clicking Sign up, you agree to the terms of use.</small>
+            </form>
+        <% } %>
+    </div>
+    <!--Order confirmation after user placed an order-->
+    <% if(locals.orderPlaced && locals.orderInfo){ %>
+        <div class="orderConfirmationPage">
+            <h1><img src="/images/checkmarkIcon.png" id="checkmarkIcon" alt="checkmark icon in order confirmation page">Thanks For Shopping With Us!</h1>
+            <p>An email confirmation has been sent to <%= orderInfo.email %> </p>
+            <div class="orderSummary" style="width: 700px;">
+                <h2 style="margin-top: 20px; text-align: center;">Order Details</h2>
+                <hr>
+                <div class="orderSummaryDetails">
+                    <p>Order Number</p>
+                    <p><%= orderInfo.orderNumber %></p>
+                </div>
+                <div class="orderSummaryDetails">
+                    <p>Date of Purchase</p>
+                    <p><%= orderInfo.dateOfPurchase.toString().substring(0,15) %></p>
+                </div>
+                <div class="orderSummaryDetails">
+                    <p>Order Total</p>
+                    <p>$<%= orderInfo.cost.total %></p>
+                </div>
+                <div class="orderSummaryDetails">
+                    <p>Points Earned</p>
+                    <p><%= orderInfo.pointsEarned %></p>
+                </div>
+                <div style="display: flex; flex-direction: column; margin-left: 10%;">
+                    <p style="font-weight: bold;">Shipping Address</p>
+                    <p><%= orderInfo.residentialAddress.trim() %></p>
+                    <div style="display: flex;">
+                        <p><%= orderInfo.city.trim() %>,</p>
+                        <p style="margin-left: 10px;"><%= orderInfo.americanState %></p>
+                    </div>
+                    <p><%= orderInfo.zipCode %></p>
+                </div>
+            </div>
+        </div>
+    <% } %>
+    <script>
+        document.addEventListener("DOMContentLoaded", (event)=>{
+
+            //During checkout, if user's billing info is same as shipping
+            let checkbox = document.getElementById("billingSameAsShipping");
+            if(checkbox){
+                checkbox.addEventListener("change", billingSameAsShipping); //function triggers when event happens
+            };
+
+            //If user enters valid promo code, display success message
+            var validPromoCodeMessage = document.getElementById("validPromoCodeMessage")
+            if(validPromoCodeMessage.innerHTML != ""){
+                document.getElementById("applyPromoCodeBox").hidden = true;
+            };
+        });
+
+        //autofills all billing input fields to match shipping's
+        function billingSameAsShipping(){
+            var checkbox = document.getElementById("billingSameAsShipping");
+            
+            if(checkbox.checked == true){
+                document.getElementById("billingFirstName").value = document.getElementById("firstName").value;
+                document.getElementById("billingLastName").value = document.getElementById("lastName").value;
+                document.getElementById("billingAddress").value = document.getElementById("address").value;
+                document.getElementById("billingState").value = document.getElementById("state").value;
+                document.getElementById("billingCity").value = document.getElementById("city").value;
+                document.getElementById("billingZipCode").value = document.getElementById("zipCode").value;
+      
+            } else{
+                document.getElementById("billingFirstName").value = "";
+                document.getElementById("billingLastName").value = "";
+                document.getElementById("billingAddress").value = "";
+                document.getElementById("billingState").value = "";
+                document.getElementById("billingCity").value = "";
+                document.getElementById("billingZipCode").value = "";
+            };
+        };
+
+        //hides payment info fill-out form if user has cards on file
+        function hidePaymentMethodInfoSection(){
+            var hasSavedCards = "<%= locals.memberPaymentMethods && locals.memberPaymentMethods.length > 0 ?  true : false %>";
+            var paymentMethodInfo = document.getElementById("paymentMethodInfo");
+            var memberPaymentMethodSelection = document.getElementById("memberPaymentMethodSelection")
+            
+            if(hasSavedCards == "true"){ //if user has credit card(s) on file
+                if(memberPaymentMethodSelection.value == "other"){
+                    paymentMethodInfo.hidden = false;
+                    document.getElementById("cardHolderName").required = true;
+                    document.getElementById("cardType").required = true;
+                    document.getElementById("creditCardNumber").required = true;
+                    document.getElementById("expirationDate").required = true;
+                    document.getElementById("cvcNumber").required = true;
+
+                } else{
+                    paymentMethodInfo.hidden = true;
+                    document.getElementById("cardHolderName").removeAttribute("required");
+                    document.getElementById("cardType").removeAttribute("required");
+                    document.getElementById("creditCardNumber").removeAttribute("required");
+                    document.getElementById("expirationDate").removeAttribute("required");
+                    document.getElementById("cvcNumber").removeAttribute("required");
+                };
+            };
+        };
+    </script>
+    <%- include("partials/footer.ejs") %> <!-- !!IMPORTANT: MUST BE PLACED AT END OF <BODY>-->
+</body>
+</html>

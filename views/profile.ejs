@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <%- include("partials/header.ejs") %> <!-- Partials: header... inside views folder-->
+    <link rel="stylesheet" href="/styles/styles.css"> <!-- CSS styling-->    
+</head>
+<body>
+    <div class="profileBox">
+        <div class="col-4 profileTabs">
+            <div class="list-group" id="list-tab" role="tablist">
+                <form action="/viewProfile/tabs" method="post">
+                    <input type="submit" name="personal" value="Personal Information" class="list-group-item list-group-item-action" id="list-home-list" data-bs-toggle="list" role="tab" aria-controls="list-home">
+                    <input type="submit" name="payments" value="Payments" class="list-group-item list-group-item-action" id="list-messages-list" data-bs-toggle="list" role="tab" aria-controls="list-messages">
+                    <input type="submit" name="purchaseHistory" value="Purchase History" class="list-group-item list-group-item-action" id="list-settings-list" data-bs-toggle="list" role="tab" aria-controls="list-settings">
+                    <input type="submit" name="rewards" value="Rewards" class="list-group-item list-group-item-action" id="list-settings-list" data-bs-toggle="list" role="tab" aria-controls="list-settings">
+                    <input type="submit" name="accountOwnership" value="Account Ownership" class="list-group-item list-group-item-action" id="list-settings-list" data-bs-toggle="list" role="tab" aria-controls="list-settings">
+                </form>
+            </div>
+        </div>
+        <!-- The content displayed from each tab-->
+        <div class="profileTabContent p-4 p-md-5 border rounded-3 bg-light">
+        <!-- PERSONAL INFO TAB--> 
+          <% if(locals.personalInfoTab){ %>
+                <form class="" method="post" action="/updateUserPersonalInfo">  
+                    <div class="errorMessage"> <%= locals.error %></div>
+                    <div class="PersonalInfoEdit">
+                        <button id="editButton" type="button" onclick="personalInfoEdit()" class="btn btn-light"> Edit
+                            <img src="/images/pencilIcon.png" alt="pencil icon to edit personal info">
+                        </button>
+                        <a href="/viewProfile" class="btn btn-danger" id="cancelButton" hidden="true">Cancel</a>
+                    </div>
+                    <p style="font-weight: bold; font-size: 25px;">Personal Information</p>
+                    <div class="signUpSmallBoxes">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name="firstName" value="<%= user.firstname %>" id="firstName" required disabled>
+                            <label for="firstName"> First Name</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" name="lastName" value="<%= user.lastname %>" id="lastName" required disabled>
+                            <label for="lastName"> Last Name</label>
+                        </div>
+                    </div>
+                    <div class="signUpSmallBoxes">
+                        <div class="form-floating mb-3">
+                            <input type="number" class="form-control" name="phoneNumber" value="<%= user.phonenumber %>" id="phoneNumber" disabled>
+                            <label for="phoneNumber"> Phone Number</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="date" class="form-control" id="" name="birthday" value="<%= user.birthday.slice(0,10) %>" min="1900-01-01" max="2026-12-31" disabled/>                        
+                            <label for="birthday">Birthday</label>
+                        </div>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <div class="col-auto">
+                            <label class="sr-only" for="inlineFormInputGroup"></label>
+                            <div class="input-group mb-2">
+                              <div class="input-group-prepend">
+                                <div class="input-group-text">@</div>
+                              </div>
+                              <input type="text" class="" name="username" value="<%= user.username %>" id="inlineFormInputGroup" placeholder="Username" required disabled>
+                            </div>
+                          </div>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="email" class="form-control" name="email" value="<%= user.email %>" required disabled>
+                        <label for="floatingInput">Email address</label>
+                    </div>
+                    <hr class="my-4"> <!-- Horiz. line-->
+                    <p style="font-weight: bold; font-size: 25px;">Shipping Information</p>
+                    <div class="form-floating" style="margin: 15px 0px;">
+                        <input type="text" class="form-control" name="residentialAddress" value="<%= user.address %>" id="inputAddress" disabled>
+                        <label for="inputAddress">Address</label>
+                    </div>
+                    <div class="cityZipState">
+                        <div class="form-floating col-md-6">
+                          <input type="text" class="form-control" name="city" value="<%= user.city %>" id="inputCity" disabled>
+                          <label for="inputCity">City</label>
+                        </div>
+                        <div class="form-floating col-md-4">
+                          <label for="inputState" style="font-size: 12px; ">State</label>
+                          <select id="inputState" name="americanState" value="<%= user.state %>" class="form-control" disabled>
+                            <option value="" selected></option>
+                            <option value="AL" <%= user.state === "AL" ? "selected" : "" %>>AL</option>
+                            <option value="AK" <%= user.state === "AK" ? "selected" : "" %>>AK</option>
+                            <option value="AZ" <%= user.state === "AZ" ? "selected" : "" %>>AZ</option>
+                            <option value="AR" <%= user.state === "AR" ? "selected" : "" %>>AR</option>
+                            <option value="CA" <%= user.state === "CA" ? "selected" : "" %>>CA</option>
+                            <option value="CO" <%= user.state === "CO" ? "selected" : "" %>>CO</option>
+                            <option value="CT" <%= user.state === "CT" ? "selected" : "" %>>CT</option>
+                            <option value="DE" <%= user.state === "DE" ? "selected" : "" %>>DE</option>
+                            <option value="FL" <%= user.state === "FL" ? "selected" : "" %>>FL</option>
+                            <option value="GA" <%= user.state === "GA" ? "selected" : "" %>>GA</option>
+                            <option value="HI" <%= user.state === "HI" ? "selected" : "" %>>HI</option>
+                            <option value="ID" <%= user.state === "ID" ? "selected" : "" %>>ID</option>
+                            <option value="IL" <%= user.state === "IL" ? "selected" : "" %>>IL</option>
+                            <option value="IN" <%= user.state === "IN" ? "selected" : "" %>>IN</option>
+                            <option value="IA" <%= user.state === "IA" ? "selected" : "" %>>IA</option>
+                            <option value="KS" <%= user.state === "KS" ? "selected" : "" %>>KS</option>
+                            <option value="KY" <%= user.state === "KY" ? "selected" : "" %>>KY</option>
+                            <option value="LA" <%= user.state === "LA" ? "selected" : "" %>>LA</option>
+                            <option value="ME" <%= user.state === "ME" ? "selected" : "" %>>ME</option>
+                            <option value="MD" <%= user.state === "MD" ? "selected" : "" %>>MD</option>
+                            <option value="MA" <%= user.state === "MA" ? "selected" : "" %>>MA</option>
+                            <option value="MI" <%= user.state === "MI" ? "selected" : "" %>>MI</option>
+                            <option value="MN" <%= user.state === "MN" ? "selected" : "" %>>MN</option>
+                            <option value="MS" <%= user.state === "MS" ? "selected" : "" %>>MS</option>
+                            <option value="MO" <%= user.state === "MO" ? "selected" : "" %>>MO</option>
+                            <option value="MT" <%= user.state === "MT" ? "selected" : "" %>>MT</option>
+                            <option value="NE" <%= user.state === "NE" ? "selected" : "" %>>NE</option>
+                            <option value="NV" <%= user.state === "NV" ? "selected" : "" %>>NV</option>
+                            <option value="NH" <%= user.state === "NH" ? "selected" : "" %>>NH</option>
+                            <option value="NJ" <%= user.state === "NJ" ? "selected" : "" %>>NJ</option>
+                            <option value="NM" <%= user.state === "NM" ? "selected" : "" %>>NM</option>
+                            <option value="NY" <%= user.state === "NY" ? "selected" : "" %>>NY</option>
+                            <option value="NC" <%= user.state === "NC" ? "selected" : "" %>>NC</option>
+                            <option value="ND" <%= user.state === "ND" ? "selected" : "" %>>ND</option>
+                            <option value="OH" <%= user.state === "OH" ? "selected" : "" %>>OH</option>
+                            <option value="OK" <%= user.state === "OK" ? "selected" : "" %>>OK</option>
+                            <option value="OR" <%= user.state === "OR" ? "selected" : "" %>>OR</option>
+                            <option value="PA" <%= user.state === "PA" ? "selected" : "" %>>PA</option>
+                            <option value="RI" <%= user.state === "RI" ? "selected" : "" %>>RI</option>
+                            <option value="SC" <%= user.state === "SC" ? "selected" : "" %>>SC</option>
+                            <option value="SD" <%= user.state === "SD" ? "selected" : "" %>>SD</option>
+                            <option value="TN" <%= user.state === "TN" ? "selected" : "" %>>TN</option>
+                            <option value="TX" <%= user.state === "TX" ? "selected" : "" %>>TX</option>
+                            <option value="UT" <%= user.state === "UT" ? "selected" : "" %>>UT</option>
+                            <option value="VT" <%= user.state === "VT" ? "selected" : "" %>>VT</option>
+                            <option value="VA" <%= user.state === "VA" ? "selected" : "" %>>VA</option>
+                            <option value="WA" <%= user.state === "WA" ? "selected" : "" %>>WA</option>
+                            <option value="WV" <%= user.state === "WV" ? "selected" : "" %>>WV</option>
+                            <option value="WI" <%= user.state === "WI" ? "selected" : "" %>>WI</option>
+                            <option value="WY" <%= user.state === "WY" ? "selected" : "" %>>WY</option>
+                          </select>
+                        </div>
+                        <div class="form-floating col-md-2">
+                          <input type="number" name="zipCode" value="<%= user.zipcode %>" min="0" class="form-control" id="inputZip" disabled>
+                          <label for="inputZip">Zip</label>
+                        </div>
+                    </div>
+                    <input class="w-100 btn btn-lg btn-primary" id="submitButton" type="submit" value="Save" style="margin-top: 20px;" hidden="true">
+                </form>
+
+                <!--PAYMENTS TAB-->
+            <% } else if(locals.paymentsInfoTab && locals.payments){ %>
+                    <p style="font-weight: bold; font-size: 35px;">Payments</p>
+                    <hr>
+                    <% if(payments.length == 0 || payments === undefined){ %>
+                        <p>You have no cards on file.</p>
+                    <% } else{ %> <!-- Shows all payment methods of user-->
+                            <% for(var i = 0; i < payments.length; i++){ %>
+                                <form action="/detailedPaymentMethodInfo" method="post">                           
+                                    <input type="submit" class="creditCard btn btn-secondary" name="<%= payments[i].paymentid %>" value="<%= payments[i].cardtype.toUpperCase() %> <%= payments[i].cardnumber.substring(payments[i].cardnumber.length - 4)%>" id="">       
+                                </form>
+                            <% } %>
+                    <% } %>
+                    <form action="/addPaymentMethod" method="post">
+                        <button type="submit" class="w-50 btn btn-lg btn-primary">
+                            <input type="text" hidden="true" name="addNewCard">
+                            Add new card
+                        </button>
+                    </form>
+            <!-- Viewing detailed info of a payment method-->
+            <% } else if(locals.detailedPaymentMethodInfo && locals.creditCard){ %>
+                <form action="/deletePaymentMethod" method="post">
+                    <input type="hidden" name="paymentID" value="<%= creditCard.paymentid %>" id="">
+                    <button class="w-10 btn btn-primary mb-3" type="button" style="margin-top: 20px;" onclick="window.location.href='/paymentsInfo'">Back</button>
+                    <div class="form-floating col-md-6 mb-3">
+                        <input type="text" class="form-control" name="creditCardNumber" value="XXXXXX<%= creditCard.cardnumber.substring(creditCard.cardnumber.length - 4)%>" id="" readonly>
+                        <label for="creditCardNumber">Card Number</label>
+                    </div>     
+                    <div class="form-floating col-md-6 mb-3">
+                        <input type="text" class="form-control" name="cardHolderName" value="<%= creditCard.cardholdername %>" id="" readonly>
+                        <label for="cardHolderName">Name On Card</label>
+                    </div>
+                    <div class="form-floating col-md-6 mb-3">
+                        <input type="text" class="form-control" name="expirationDate" value="<%= creditCard.expirationdate.slice(0,10) %>" id="" readonly>
+                        <label for="expirationDate">Expiration Date</label>
+                    </div>
+                    <div class="form-floating col-md-6 mb-3">
+                        <input type="text" class="form-control" name="cardType" value="<%= creditCard.cardtype.toUpperCase() %>" id="" readonly>
+                        <label for="cardType">Card Type</label>
+                    </div>
+                    <button class="w-100 btn btn-lg btn-danger" type="submit" style="margin-top: 20px;">Delete</button>     
+                </form>
+
+            <!--Adding payment method-->
+            <% } else if(locals.addPaymentMethod){ %>
+                    <div class="errorMessage"> <%= locals.errorMessage %> </div>
+                    <form action="/addPaymentMethod" method="post">
+                        <div class="form-floating mb-3">
+                            <input type="text" name="cardHolderName" value="<%= locals.userInput ? userInput.cardHolderName : "" %>" class="form-control" id="" required>
+                            <label for="cardHolderName">Name On Card</label>
+                        </div>
+                        <div class="form-floating col-md-4 mb-3">
+                            <select name="cardType" value="<%= locals.userInput ? userInput.cardType : "" %>" id="" class="form-control" required>
+                                <option value="visa">VISA</option>
+                                <option value="discover">Discover</option>
+                                <option value="mastercard">Mastercard</option>
+                                <option value="american express">American Express</option>
+                            </select>
+                            <label for="cardType">Card Type</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="number" name="creditCardNumber" value="<%= locals.userInput ? userInput.creditCardNumber : "" %>" class="form-control" id="" required>
+                            <label for="creditCardNumber">Card Number</label>
+                        </div>
+                        <div class="form-floating col-md-4 mb-3">
+                            <input type="date" class="form-control" id="" name="expirationDate" value="<%= locals.userInput ? userInput.expirationDate : "" %>" min="2025-01-01" max="2035-12-31" required>                        
+                            <label for="expirationDate">Exp Date</label>
+                        </div>
+                        <div class="form-floating col-md-2 mb-3">
+                            <input type="number" name="securityCode" value="<%= locals.userInput ? userInput.securityCode : "" %>" class="form-control" id="" min="0" required>
+                            <label for="securityCode">CVC</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" name="nickname" value="<%= locals.userInput ? userInput.nickname : "" %>" class="form-control" id="">
+                            <label for="nickname">Nickname</label>
+                        </div>
+                        <div class="confirmationButtons">
+                            <button class="w-100 btn btn-lg btn-secondary" type="button" style="margin-top: 20px;" onclick="window.location.href='/paymentsInfo'">Cancel</button>     
+                            <button class="w-100 btn btn-lg btn-primary" type="submit" style="margin-top: 20px;">Add</button>
+                        </div>     
+                    </form>
+
+                <!--PURCHASE HISTORY TAB-->
+            <% } else if(locals.purchaseHistoryTab){ %>
+                <p style="font-weight: bold; font-size: 35px;">Purchase History</p>
+                <hr>
+                <% if(locals.orders){ %>
+                    <% if(orders.length == 0){ %>
+                        <p>You have no past orders.</p>
+                    <% } else { %>
+                        <% for(let order of orders){ %> <!-- each order-->
+                            <div class="orderContainer">
+                                <div class="orderContainerHeader">
+                                    <p>Order: <%= order.orderNumber %></p>
+                                    <p class="orderDateOfPurchase"> Date of Purchase: <%= order.dateOfPurchase.substring(0,10) %></p>
+                                </div>
+                                <div class="orderContainerBody">
+                                    <div id="orderStatus">
+                                        <p><%= order.orderStatus %></p>
+                                    </div>
+                                    <div class="orderContainerShopItemImages">
+                                        <% for(let i = 0; i < order.items.length; i++){ %>
+                                            <div class="shopItemImages">
+                                                <img src="./images/shop/shopItem<%= order.items[i].itemID %>.png" alt="shop item's image">
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                    <div class="viewOrderDetailsContainer">
+                                        <form action="/viewOrderDetails" method="post">
+                                            <input type="hidden" name="orderDetails" value="<%= JSON.stringify(order)%>" id="">
+                                            <button class="btn" type="submit" style="text-decoration: underline; color: blue;">
+                                                View Details
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        <% } %>
+                    <% } %>
+                <% }if(locals.viewOrderDetails && locals.order){ %>
+                    <a href="/purchaseHistoryInfo" class="btn btn-secondary" style="width: 15%; margin-bottom: 10px;">
+                        <img src="/images/leftArrowIcon.png" alt="">
+                        Back
+                    </a>
+                    <div class="orderContainer" style="height: 100%; margin-bottom: 0%;">
+                        <div class="orderContainerHeader" style="height: 15%;">
+                            <p style="font-weight: bold; font-size: 25px;">Order #: <%= order.orderNumber %></p>
+                        </div>
+                        <div class="orderFullDetailsBody">
+                            <div class="card">
+                                <p style="font-weight: bold; font-size: 20px; font-style: italic; margin-bottom: 25px; color: green;"><%= order.orderStatus %></p>
+                                <div>
+                                    <p>Total</p>
+                                    <p>$<%= order.totalPrice %></p>
+                                </div>
+                                <div>
+                                    <p>Date of Purchase</p>
+                                    <p><%= order.dateOfPurchase.substring(0,10) %></p>
+                                </div>
+                                <div>
+                                    <p>Points Earned</p>
+                                    <p><%= order.pointsEarned %></p>
+                                </div>
+                                <div>
+                                    <p>Payment Method</p>
+                                    <p><%= order.paymentMethod %></p>
+                                </div>
+                            </div>
+                            <div class="itemsInOrderContainer"> <!--Items in Order container-->
+                                <p style="text-align: center; font-weight: bold; font-size: 25px;">Items In Order</p>
+                                <div style="height: 85%; width: 100%; overflow-y: auto;">
+                                    <% for(let item of order.items){ %>
+                                        <div>
+                                            <div>
+                                                <p style=" width: 50%; font-size: 15px; text-align: center;">"<%= item.title.toUpperCase() %>"</p>
+                                                <img style="width: 75px; height: 75px;" src="./images/shop/shopItem<%= item.itemID %>.png" alt="each shop item's image">
+                                            </div>
+                                            <div>
+                                                <p>Price</p>
+                                                <p>$<%= item.price %></p>
+                                            </div>
+                                            <div>
+                                                <p>Quantity</p>
+                                                <p><%= item.quantity %></p>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                <% }%>
+
+                <!--REWARDS TAB-->
+            <% } else if(locals.rewardsInfoTab){ %>
+                <p style="font-weight: bold; font-size: 35px;">Rewards</p>
+                <hr>
+                <div class="userRewardsContainer">
+                    <div>
+                        <p style="font-weight: bold; font-size: 25px;">Points Balance</p>
+                        <p id="userRewardPointsBalance"><%= userRewardPoints %></p>
+                        <form class="couponsList" action="/getCouponCode" method="post" onsubmit="return confirm('Are you sure you want to redeem this coupon?')">
+                            <input type="hidden" name="userID" value="<%= user.userid %>" id="">
+                            <input class="btn btn-success discountCouponButton" type="submit" name="discountCoupon10" value="$10 OFF" id="discountCoupon10">
+                            <input class="btn btn-success discountCouponButton" type="submit" name="discountCoupon50" value="$50 OFF" id="discountCoupon50">
+                            <input class="btn btn-success discountCouponButton" type="submit" name="discountCouponHundred" value="$100 OFF" id="discountCoupon100">
+                        </form>
+                    </div>
+                    <div>
+                        <p style="font-weight: bold; font-size: 25px; position: relative;">Available Rewards</p>
+                        <div style="width: 85%; height: 75%; overflow-y: auto; display: flex; flex-direction: column; align-items: center; border: solid 2px black; padding: 10px;">
+                            <% if(locals.userAvailableCoupons && locals.userAvailableCoupons.length == 0){ %>
+                                <p>You have no available coupons or rewards</p>
+                            <% } else{ %>
+                                <% for(let coupon of userAvailableCoupons){ %>
+                                    <div class="availableAward">
+                                        <p><%= coupon.couponcode %></p>
+                                        <p>$<%= coupon.discountamount %> OFF</p>
+                                    </div>
+                                <% } %>
+                            <% }%>
+                        </div>
+                    </div>
+                </div>
+                <p style="font-weight: bold; font-size: 20px;">Terms and Conditions</p>
+                <ul>
+                    <li>For every $500 you spend on future orders, you earn 1 point</li>
+                    <li>Reach 100 points and get a $10 discount coupon</li>
+                    <li>Only 1 coupon can be used per order</li>
+                </ul>
+                <!--ACCOUNT OWNERSHIP TAB-->
+            <% } else if(locals.accountOwnershipTab){ %>
+                <p style="font-weight: bold; font-size: 35px;">Account Ownership</p>
+                <hr>
+                <div class="accountOwnershipOptions">
+                    <p style="font-weight: bold; font-size: 25px;">Account Deletion</p>
+                    <a class="accountOwnershipLinks" href="/deleteAccountPage">Delete Account</a>  
+                </div>
+                <div class="accountOwnershipOptions">
+                    <p style="font-weight: bold; font-size: 25px;">Security</p>
+                    <a href="/changePasswordPage" class="accountOwnershipLinks">Change Password</a>
+                </div>  
+                    
+                <!--Account deletion page-->
+            <% } else if(locals.deleteAccountPage){ %>
+                <h1>Account Deletion</h1>
+                <p>Are you sure you want to delete your account?</p>
+                <ul>
+                    <li>All personal information will be erased and cannot be recovered</li>
+                    <li>Your reward points will be forfeited</li>
+                    <li>Any orders associated with your account and its information will be removed and cannot be retrieved</li>
+                    <li>Any saved payment methods and billing information will be removed from our system</li>
+                </ul>
+                <div class="confirmationButtons">
+                    <button class="w-25 btn btn-lg btn-secondary" type="button" onclick="window.history.go(-1);">Back</button> 
+                    <a href="/deleteAccount" class="w-25 btn btn-lg btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                </div>
+    
+                <!--Changing user's password page-->
+            <% } else if(locals.changePasswordPage){ %>
+                <p style="font-weight: bold; font-size: 25px;">Change your password</p>
+                <div class="errorMessage"> <%= locals.errorMessage %> </div>
+                <div class="confirmationMessage"><%= locals.message %> </div>
+                <form action="/changePassword" method="post" onkeyup="passwordColorChecker()">
+                    <div class="form-floating mb-3">
+                        <input type="password" class="form-control" name="currentPassword" required>
+                        <label for="currentPassword">Current Password</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="password" class="form-control" name="newPassword" id="newPassword" required>
+                        <label for="newPassword">New Password</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="password" class="form-control" name="newPasswordConfirmation" id="newPasswordConfirmation" required>
+                        <label for="passwordConfirmation">Confirm New Password</label>
+                    </div>
+                    <div class="confirmationButtons">
+                        <a href="/accountOwnershipInfo" class="w-25 btn btn-lg btn-secondary" style="height: 55px; margin-top: 20px;">Cancel</a>     
+                        <button class="w-30 btn btn-lg btn-primary" type="submit" style="margin-top: 20px;" onclick="">Change Password</button>
+                    </div>
+                </form>
+            <% } else{ %>
+                <p>hi</p>
+            <% }%>
+        </div> <!-- End of tab's content-->
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", event =>{
+
+            //Loyalty program
+            var userRewardPointsBalance = document.getElementById("userRewardPointsBalance");
+            var coupons = document.getElementsByClassName("discountCouponButton");
+
+            if(userRewardPointsBalance.innerHTML == 0 || userRewardPointsBalance.innerHTML <= 99){ //if user's reward balance is 0
+                for(let coupon of coupons){
+                    coupon.disabled = true;
+                    // coupon.style.backgroundColor = "gray"
+                };
+            } else if(userRewardPointsBalance.innerHTML < 250){
+                // document.getElementById("discountCoupon10").disabled = false;
+                document.getElementById("discountCoupon50").disabled = true;
+                document.getElementById("discountCoupon100").disabled = true;
+            } else if(userRewardPointsBalance.innerHTML < 400){
+                document.getElementById("discountCoupon100").disabled = true;
+            };
+        });
+
+        //Editing the user's personal info
+        function personalInfoEdit(){
+            document.getElementById("editButton").setAttribute("hidden", true) //the pencil edit icon
+            document.getElementById("cancelButton").removeAttribute("hidden"); //the cancel button
+            document.getElementById("submitButton").removeAttribute("hidden");
+            let elements = document.getElementsByClassName("form-control")
+            for(var i = 0; i < elements.length; i++){
+                elements[i].disabled = false;
+            };
+        };
+
+        //Changing the user's passord
+        var password = document.getElementById("newPassword");
+        var passwordConfirmation = document.getElementById("newPasswordConfirmation");
+
+        //password confirmation checker
+        function validatePassword(){
+            if(passwordConfirmation.value != password.value){
+                passwordConfirmation.setCustomValidity("Passwords do not match");
+                    return false;
+            } else{
+                passwordConfirmation.setCustomValidity("");
+                return true;
+                }
+            };
+            //NOTE: 'function()' will execute immediately (synchronous) while 'function' executes when an event action is triggered
+            password.onchange = validatePassword; //EventListener: when a user types and moves away from the input field.
+            passwordConfirmation.onkeyup = validatePassword; //each keyboard letter a user presses, it automatically checks if password matches
+
+            //green color if both passwords are matching as the user types
+            function passwordColorChecker(){
+            if(password.value != passwordConfirmation.value){
+                password.style.color = "red"
+                passwordConfirmation.style.color = "red"
+            } else{
+                password.style.color = "green"
+                passwordConfirmation.style.color = "green"
+                };
+            };     
+    </script>
+    <%- include("partials/footer.ejs") %> <!-- !!IMPORTANT: MUST BE PLACED AT END OF <BODY>: Partials: footer... inside views folder-->
+</body>
+</html>
