@@ -4,10 +4,12 @@ import bodyParser from "body-parser";
 import session from "express-session";
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
+import env from "dotenv";
 
 const app = express();
 const port = 3000; 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+env.config()
 const apiURL = "http://localhost:4000";
 var cart = []; //non-logged in user's cart
 
@@ -15,7 +17,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public")); //for our CSS styling
 app.use('/bootstrap', express.static(__dirname + '/node_modules/bootstrap/dist'));
 app.use(session({ //this middleware is used for login session of a user
-    secret: "password123!", //secret key used to sign the session ID cookie to ensure that the session data is secure
+    secret: process.env.SESSION_SECRET, //secret key used to sign the session ID cookie to ensure that the session data is secure
     resave: false, // Don't save session if unmodified
     saveUninitialized: true    // Save new sessions even if they haven't been modified
 }));
