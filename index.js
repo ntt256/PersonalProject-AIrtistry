@@ -9,8 +9,8 @@ import env from "dotenv";
 const app = express();
 const port = 3000; 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-env.config()
 const apiURL = "http://localhost:4000";
+env.config()
 var cart = []; //non-logged in user's cart
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -99,7 +99,8 @@ app.post("/userLogin", async (req, res) =>{
     let body = req.body;
     try {
         const response = await axios.post(apiURL + "/userLogin", body);
-        const data = response.data; 
+        const data = response.data;
+
         if(data.length == 0){ //if no login record matches
             throw new Error("Email/Username and/or password is incorrect.")
         } else { //if login successful
@@ -111,7 +112,7 @@ app.post("/userLogin", async (req, res) =>{
         res.render("login.ejs", {
             loginErrorMessage: e.message,
             userInput: body,
-            login: true
+            loginPage: true
         });
     };
 });

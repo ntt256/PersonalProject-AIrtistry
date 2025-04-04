@@ -446,7 +446,7 @@ app.post("/trackOrder", async (req, res) =>{
     try{
         const result = await db.query("SELECT dateOfPurchase, orderStatus " +
             "FROM orders " +
-            "WHERE orderNumber = $1 AND lastName = $2", [req.body.orderNumber, req.body.lastName.toUpperCase()])
+            "WHERE orderNumber = $1 AND TRIM(lastName) = $2", [req.body.orderNumber, req.body.lastName.toUpperCase()])
         const data = result.rows;
         res.json(data);
 
